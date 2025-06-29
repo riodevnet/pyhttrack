@@ -2,6 +2,8 @@
 
 PyHttrack is a lightweight and powerful Python tool that allows you to download entire websites directly to your local computer for offline access, archive, or content analysis. Inspired by the legendary HTTrack, PyHttrack comes with a modern approach, is easily customizable, and can be integrated in various automated workflows.
 
+![Image](https://github.com/user-attachments/assets/4eeb7a42-48b2-4c00-81bd-274abd7bbe75)
+
 ### 🔍 Top Features:
 
 - 🌐 Download Full Website - HTML, CSS, JS, images and other media directly to local directory.
@@ -48,12 +50,12 @@ or download many websites
 Run the following command to start the download :
 
 ```bash
-python main.py
+python pyhttrack.py
 ```
 
 ## 📥 Latest Release
 
-[https://github.com/riodevnet/PyHttrack/releases/latest](Click here) to get the latest version of PyHttrack.
+[Click here](https://github.com/riodevnet/PyHttrack/releases/latest) to get the latest version of PyHttrack.
 
 ## 🤝 Contribution
 
