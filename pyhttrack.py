@@ -60,7 +60,6 @@ else:
         print("Cannot find or install wget.")
         sys.exit(1)
 
-# Bersihkan terminal
 os.system('cls' if os.name == 'nt' else 'clear')
 
 results = []
@@ -141,6 +140,7 @@ for url in urls:
                 })
                 print(f"{Fore.RED}[{now}] Failed:{Style.RESET_ALL} {path}")
         process.wait()
+        print("\n")
     except Exception as e:
         print(f"{Fore.RED}Failed to Download:{Style.RESET_ALL} {url}\n")
 
