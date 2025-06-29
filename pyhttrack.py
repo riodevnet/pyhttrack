@@ -74,12 +74,12 @@ except FileNotFoundError:
     sys.exit(1)
 
 print(f"\nTotal URL : {len(urls)}")
-print("==================")
+print("==================\n")
 
 for url in urls:
-    print(f"\nDownloading: {url}\n")
-
+    print(f"Downloading: {url}")
     try:
+        print("\n")
         process = subprocess.Popen([
             wget_exec,
             "-r", "-m", "-c",
@@ -130,17 +130,19 @@ for url in urls:
                     "size": "-"
                 })
                 print(f"{Fore.YELLOW}[{now}] Skipped:{Style.RESET_ALL} {path}")
+            else:
+                path = line.split("'")[1]
+                results.append({
+                    "timestamp": now,
+                    "url": url,
+                    "file": path,
+                    "status": "failed",
+                    "size": "-"
+                })
+                print(f"{Fore.RED}[{now}] Failed:{Style.RESET_ALL} {path}")
         process.wait()
     except Exception as e:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        results.append({
-            "timestamp": now,
-            "url": url,
-            "file": "-",
-            "status": "failed",
-            "size": "-",
-        })
-        print(f"{Fore.RED}[{now}] Failed:{Style.RESET_ALL} {url} | Error: {e}")
+        print(f"{Fore.RED}Failed to Download:{Style.RESET_ALL} {url}\n")
 
 if results:
     with open("log.txt", "a", encoding="utf-8") as log_file:
