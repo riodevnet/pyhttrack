@@ -105,7 +105,29 @@ for url in urls:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             line = line.strip()
 
-            if "saved [" in line and "'" in line:
+            if "ERROR 404" in line or "404 Not Found" in line:
+                results.append({
+                    "timestamp": now,
+                    "url": url,
+                    "file": "-",
+                    "status": "404 not found",
+                    "size": "-"
+                })
+                print(f"{Fore.RED}[{now}] 404 Not Found:{Style.RESET_ALL} {url}")
+                continue
+
+            elif "403 Forbidden" in line:
+                results.append({
+                    "timestamp": now,
+                    "url": url,
+                    "file": "-",
+                    "status": "403 forbidden",
+                    "size": "-"
+                })
+                print(f"{Fore.RED}[{now}] 403 Forbidden:{Style.RESET_ALL} {url}")
+                continue
+
+            elif "saved [" in line and "'" in line:
                 try:
                     path = line.split("'")[1]
                     raw_size = line.split("saved [")[-1].split("]")[0]
@@ -123,6 +145,7 @@ for url in urls:
                     url_has_result = True
                 except:
                     continue
+
             elif "not modified" in line and "'" in line:
                 try:
                     path = line.split("'")[1]
@@ -137,8 +160,10 @@ for url in urls:
                     url_has_result = True
                 except:
                     continue
+
         process.wait()
-        if not url_has_result or process.returncode != 0:
+
+        if not url_has_result:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"{Fore.RED}Failed to Download:{Style.RESET_ALL} {url}")
             results.append({
@@ -148,7 +173,7 @@ for url in urls:
                 "status": "failed",
                 "size": "-"
             })
-        print("\n")
+
     except Exception as e:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"{Fore.RED}Error while downloading:{Style.RESET_ALL} {url} | {str(e)}")
@@ -170,7 +195,7 @@ else:
 
 success = sum(r['status'] == 'success' for r in results)
 skipped = sum(r['status'] == 'not modified' for r in results)
-failed = sum(r['status'] == 'failed' for r in results)
+failed = sum(r['status'] in ['failed', '404 not found', '403 forbidden'] for r in results)
 
 print(f"\n{Fore.GREEN}Success : {success}{Style.RESET_ALL}")
 print(f"{Fore.YELLOW}Skipped : {skipped}{Style.RESET_ALL}")
