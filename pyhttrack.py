@@ -76,9 +76,10 @@ print(f"\nTotal URL : {len(urls)}")
 print("==================\n")
 
 for url in urls:
-    print(f"Downloading: {url}")
+    print(f"Downloading: {url}\n")
+    url_has_result = False
+
     try:
-        print("\n")
         process = subprocess.Popen([
             wget_exec,
             "-r", "-m", "-c",
@@ -105,44 +106,59 @@ for url in urls:
             line = line.strip()
 
             if "saved [" in line and "'" in line:
-                path = line.split("'")[1]
-                raw_size = line.split("saved [")[-1].split("]")[0]
-                byte_size = raw_size.split("/")[-1]
-                size = format_size(byte_size)
+                try:
+                    path = line.split("'")[1]
+                    raw_size = line.split("saved [")[-1].split("]")[0]
+                    byte_size = raw_size.split("/")[-1]
+                    size = format_size(byte_size)
 
-                results.append({
-                    "timestamp": now,
-                    "url": url,
-                    "file": path,
-                    "status": "success",
-                    "size": size
-                })
-                print(f"{Fore.GREEN}[{now}] Downloaded:{Style.RESET_ALL} {path} | {size}")
-
+                    results.append({
+                        "timestamp": now,
+                        "url": url,
+                        "file": path,
+                        "status": "success",
+                        "size": size
+                    })
+                    print(f"{Fore.GREEN}[{now}] Downloaded:{Style.RESET_ALL} {path} | {size}")
+                    url_has_result = True
+                except:
+                    continue
             elif "not modified" in line and "'" in line:
-                path = line.split("'")[1]
-                results.append({
-                    "timestamp": now,
-                    "url": url,
-                    "file": path,
-                    "status": "not modified",
-                    "size": "-"
-                })
-                print(f"{Fore.YELLOW}[{now}] Skipped:{Style.RESET_ALL} {path}")
-            else:
-                path = line.split("'")[1]
-                results.append({
-                    "timestamp": now,
-                    "url": url,
-                    "file": path,
-                    "status": "failed",
-                    "size": "-"
-                })
-                print(f"{Fore.RED}[{now}] Failed:{Style.RESET_ALL} {path}")
+                try:
+                    path = line.split("'")[1]
+                    results.append({
+                        "timestamp": now,
+                        "url": url,
+                        "file": path,
+                        "status": "not modified",
+                        "size": "-"
+                    })
+                    print(f"{Fore.YELLOW}[{now}] Skipped:{Style.RESET_ALL} {path}")
+                    url_has_result = True
+                except:
+                    continue
         process.wait()
+        if not url_has_result or process.returncode != 0:
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"{Fore.RED}Failed to Download:{Style.RESET_ALL} {url}")
+            results.append({
+                "timestamp": now,
+                "url": url,
+                "file": "-",
+                "status": "failed",
+                "size": "-"
+            })
         print("\n")
     except Exception as e:
-        print(f"{Fore.RED}Failed to Download:{Style.RESET_ALL} {url}\n")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{Fore.RED}Error while downloading:{Style.RESET_ALL} {url} | {str(e)}")
+        results.append({
+            "timestamp": now,
+            "url": url,
+            "file": "-",
+            "status": "failed",
+            "size": "-"
+        })
 
 if results:
     with open("log.txt", "a", encoding="utf-8") as log_file:
