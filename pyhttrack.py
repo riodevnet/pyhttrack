@@ -50,6 +50,19 @@ def install_wget():
         print("Automatic installation only supported on Linux.")
     return None
 
+def print_banner ():
+    print(f"""
+{Fore.RED}
+:::====  ::: === :::  === :::==== :::==== :::====  :::====  :::===== :::  ===
+:::  === ::: === :::  === :::==== :::==== :::  === :::  === :::      ::: === 
+=======   =====  ========   ===     ===   =======  ======== ===      ======  {Fore.WHITE}
+===        ===   ===  ===   ===     ===   === ===  ===  === ===      === === 
+===        ===   ===  ===   ===     ===   ===  === ===  ===  ======= ===  ===
+                                                                            
+{Style.RESET_ALL}
+""")
+    
+
 if wget_path and os.path.isfile(wget_path):
     wget_exec = wget_path
 elif shutil.which("wget"):
@@ -63,6 +76,8 @@ else:
 os.system('cls' if os.name == 'nt' else 'clear')
 
 results = []
+urls = []
+
 os.makedirs("web", exist_ok=True)
 
 try:
@@ -70,7 +85,12 @@ try:
         urls = json.load(file)
 except FileNotFoundError:
     print("File 'web.json' not found.")
-    sys.exit(1)
+
+print_banner()
+
+if not urls:
+    print("No URLs found in 'web.json'.")
+    urls.append(input("Enter URL: "))
 
 print(f"\nTotal URL : {len(urls)}")
 print("==================\n")
